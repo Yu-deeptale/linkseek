@@ -1,0 +1,43 @@
+name: Build iOS IPA (CI)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-ios:
+    
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods -v 1.11.3 || true
+          cd ios || exit 0
+          pod install || true
+
+      - name: Build iOS (unsigned)
+        run: |
+          # Build an unsigned IPA so CI doesn't require Apple signing credentials.
+          flutter build ipa --no-codesign --release
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/ipa
+
+      - name: Show build output (for logs)
+        run: ls -la build/ios || true
