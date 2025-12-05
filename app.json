@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "linkseek",
+    "slug": "linkseek",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/start.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFC800",
+    "splash": {
+      "image": "./assets/start.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFC800"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/start.png",
+        "backgroundColor": "#FFC800"
+      }
+    },
+    "web": {
+      "favicon": "./assets/start.png"
+    }
+  }
+}
