@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import CustomButton from '../components/CustomButton';
+
+const { width, height } = Dimensions.get('window');
 
 type RootStackParamList = {
-  SignIn: undefined;
-  Home: undefined;
+  Event_create: undefined;
+  Visitor: undefined;
 };
 
 type TitleHostScreenNavigationProp = StackNavigationProp<RootStackParamList>;
@@ -20,27 +23,14 @@ export default function Title_host() {
       </View>
       
       <View style={styles.bottomSection}>
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => navigation.navigate('SignIn')}
-        >
-          <Image 
-            source={require('../../assets/create.png')} 
-            style={styles.buttonImage} 
-            resizeMode="contain" 
-          />
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => navigation.navigate('SignIn')}
-        >
-          <Image 
-            source={require('../../assets/answer.png')} 
-            style={styles.buttonImage} 
-            resizeMode="contain" 
-          />
-        </TouchableOpacity>
+        <CustomButton 
+          title="イベントをつくる" 
+          onPress={() => navigation.navigate('Event_create')} 
+        />
+        <CustomButton 
+          title="かいとうをかえる" 
+          onPress={() => navigation.navigate('Visitor')} 
+        />
       </View>
     </SafeAreaView>
   );
@@ -52,33 +42,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFC800',
   },
   topSection: {
-    flex: 1, // 1/3 of the screen
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     fontFamily: 'NicoMoji',
-    fontSize: 50,
+    fontSize: width * 0.13,
     color: '#ffffff',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 4, height: 4 },
+    textShadowOffset: { width: width * 0.01, height: width * 0.01 },
     textShadowRadius: 5,
   },
   bottomSection: {
-    flex: 2, // 2/3 of the screen
-    justifyContent: 'center',
+    flex: 1.2,
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingBottom: 30,
-    gap: 50,
-  },
-  button: {
-    width: 250,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonImage: {
-    width: '100%',
-    height: '100%',
+    paddingTop: height * 0.15,
+    gap: height * 0.05,
   },
 });

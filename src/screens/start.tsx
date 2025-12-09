@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, ImageBackground, StyleSheet } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { APP_START_TIME } from '../utils/time';
@@ -31,7 +31,9 @@ export default function StartScreen() {
         source={require('../../assets/start.png')}
         style={styles.image}
         resizeMode="cover"
-      />
+      >
+        <Text style={styles.title}>Linkseek</Text>
+      </ImageBackground>
     </View>
   );
 }
@@ -46,5 +48,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'NicoMoji',
+    fontSize: 60,
+    color: '#ffffff',
   },
 });
