@@ -104,10 +104,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '40%',
+    width: '45%',
   },
   picker: {
-    width: 100,
+    width: '80%',
     height: 200,
   },
   pickerItem: {
@@ -118,10 +118,8 @@ const styles = StyleSheet.create({
   unitLabel: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 5,
     color: '#333',
     fontFamily: 'NicoMoji',
     position: 'relative',
-    left: -10,
   },
 });

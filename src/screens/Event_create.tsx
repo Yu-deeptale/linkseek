@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, Dimensions, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import CustomButton from '../components/CustomButton';
 import DaySelectionModal from '../components/DaySelectionModal';
 import WeekSelectionModal from '../components/WeekSelectionModal';
@@ -12,6 +15,8 @@ import DurationSelectionModal from '../components/DurationSelectionModal';
 const { width, height } = Dimensions.get('window');
 
 export default function Event_create() {
+  const navigation = useNavigation();
+  const currentMonth = new Date().getMonth() + 1;
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [weekModalVisible, setWeekModalVisible] = useState(false);
@@ -28,13 +33,15 @@ export default function Event_create() {
   const [capacity, setCapacity] = useState(1);
   const [isCapacitySet, setIsCapacitySet] = useState(false);
   const [monthRangeModalVisible, setMonthRangeModalVisible] = useState(false);
-  const [startMonth, setStartMonth] = useState(1);
-  const [endMonth, setEndMonth] = useState(1);
+  const [startMonth, setStartMonth] = useState(currentMonth);
+  const [endMonth, setEndMonth] = useState(currentMonth);
   const [isMonthSet, setIsMonthSet] = useState(false);
   const [durationModalVisible, setDurationModalVisible] = useState(false);
   const [durationHours, setDurationHours] = useState(0);
   const [durationMinutes, setDurationMinutes] = useState(0);
   const [isDurationSet, setIsDurationSet] = useState(false);
+  const [eventName, setEventName] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
 
   const toggleDay = (day: string) => {
     if (selectedDays.includes(day)) {
@@ -106,8 +113,8 @@ export default function Event_create() {
 
   const handleMonthReset = () => {
     setIsMonthSet(false);
-    setStartMonth(1);
-    setEndMonth(1);
+    setStartMonth(currentMonth);
+    setEndMonth(currentMonth);
   };
 
   const handleDurationConfirm = (hours: number, minutes: number) => {
@@ -120,6 +127,43 @@ export default function Event_create() {
     setIsDurationSet(false);
     setDurationHours(0);
     setDurationMinutes(0);
+  };
+
+  const isFormValid = eventName.trim() !== '' && isDurationSet && eventLocation.trim() !== '' && isMonthSet && isCapacitySet;
+
+  const handleCreateEvent = async () => {
+    const missingFields = [];
+    if (!eventName.trim()) missingFields.push('イベント名');
+    if (!isDurationSet) missingFields.push('イベント所要時間');
+    if (!eventLocation.trim()) missingFields.push('場所');
+    if (!isMonthSet) missingFields.push('募集期間');
+    if (!isCapacitySet) missingFields.push('募集人数');
+
+    if (missingFields.length > 0) {
+      Alert.alert('入力エラー', `${missingFields.join('、')}を指定してください`);
+      return;
+    }
+
+    try {
+      const docRef = await addDoc(collection(db, 'events'), {
+        title: eventName,
+        duration: { hours: durationHours, minutes: durationMinutes },
+        location: eventLocation,
+        monthRange: { start: startMonth, end: endMonth },
+        capacity,
+        timeRange: isTimeSet ? { start: startTime, end: endTime } : null,
+        dateRange: isDateSet ? { start: startDate, end: endDate } : null,
+        selectedWeeks,
+        selectedDays,
+        createdAt: serverTimestamp(),
+      });
+
+      console.log('Event created with ID:', docRef.id);
+      navigation.navigate('Event_send', { eventId: docRef.id } as never);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      Alert.alert('エラー', 'イベントの作成に失敗しました');
+    }
   };
 
   return (
@@ -140,6 +184,8 @@ export default function Event_create() {
               style={styles.longInput}
               placeholder="イベント名"
               placeholderTextColor="#999"
+              value={eventName}
+              onChangeText={setEventName}
             />
           </View>
 
@@ -226,6 +272,8 @@ export default function Event_create() {
                       style={styles.gridInput}
                       placeholder={item.placeholder}
                       placeholderTextColor="#999"
+                      value={item.label === '場所' ? eventLocation : undefined}
+                      onChangeText={item.label === '場所' ? setEventLocation : undefined}
                     />
                   )}
                 </View>
@@ -236,7 +284,12 @@ export default function Event_create() {
 
           {/* 作成ボタン */}
           <View style={styles.buttonContainer}>
-            <CustomButton title="この条件で作成" onPress={() => {}} />
+            <CustomButton 
+              title="この条件で作成" 
+              onPress={handleCreateEvent} 
+              style={!isFormValid ? { backgroundColor: '#CCCCCC', shadowOpacity: 0, elevation: 0 } : undefined}
+              textStyle={!isFormValid ? { color: '#888888' } : undefined}
+            />
           </View>
         </View>
       </ScrollView>

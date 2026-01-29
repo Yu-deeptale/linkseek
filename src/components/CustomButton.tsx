@@ -8,12 +8,17 @@ type CustomButtonProps = {
   onPress: () => void;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
 };
 
-export default function CustomButton({ title, onPress, style, textStyle }: CustomButtonProps) {
+export default function CustomButton({ title, onPress, style, textStyle, disabled = false }: CustomButtonProps) {
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+    <TouchableOpacity 
+      style={[styles.button, style, disabled && styles.disabledButton]} 
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={[styles.buttonText, textStyle, disabled && styles.disabledButtonText]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -36,9 +41,17 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  disabledButton: {
+    backgroundColor: '#CCCCCC',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   buttonText: {
     fontFamily: 'NicoMoji',
     fontSize: width * 0.06,
+    color: '#cfeeff',
+  },
+  disabledButtonText: {
     color: '#cfeeff',
   },
 });
